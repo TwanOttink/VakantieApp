@@ -4,35 +4,37 @@ import { ListItem, Header } from "react-native-elements";
 import axios from "axios";
 
 export default function homePage() {
-    const [HolidayData, setHolidayData] = useState([]);
-    const [Available, SetAvailable] = useState(false);
+    const [VakantieData, setVakantieData] = useState([]);
+    const [Loaded, SetLoaded] = useState(false);
+    const [SchoolYear, SetSchoolYear] = useState("2021-2022");
   
-    function getHolidayData() {
+    function getVakantieData() {
       axios
         .get(
           "https://opendata.rijksoverheid.nl/v1/sources/rijksoverheid/infotypes/schoolholidays/schoolyear/2021-2022?output=json"
         )
         .then((res) => {
           const data = res.data.content[0];
-          setHolidayData(data);
-          SetAvailable(true);
+          setVakantieData(data);
+          SetLoaded(true);
         });
     }
   
     useEffect(() => {
-      getHolidayData();
+      getVakantieData();
     }, []);
   
     return (
       <ScrollView>
         <Header
+        leftComponent={{text: 'N'}}
             centerComponent={{text: 'Homepage', style: {color: 'darkblue', fontWeight: 'bold', fontSize: 30}}}
             containerStyle={{
                 backgroundColor: 'orange',
             }}
         />
-        {Available ? (
-          HolidayData.vacations.map((d, i) => (
+        {Loaded ? (
+          VakantieData.vacations.map((d, i) => (
             <ListItem key={i}>
               <ListItem.Content style={styles.centerText}>
                 <ListItem.Title style={styles.bigBlue}>{d.type}</ListItem.Title>
@@ -47,7 +49,7 @@ export default function homePage() {
             </ListItem>
           ))
         ) : (
-          <Text>No data available</Text>
+          <Text>Data is not available.</Text>
         )}
       </ScrollView>
     );
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   centerText: {
-    textAlign: 'center', // <-- the magic
+    textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center',
     fontWeight: 'bold',

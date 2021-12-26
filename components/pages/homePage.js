@@ -1,26 +1,36 @@
 import React, {useState, useEffect} from "react";
-import { Text, ScrollView, StyleSheet } from "react-native";
+import { Text, ScrollView, StyleSheet, RefreshControl } from "react-native";
 import { ListItem, Header } from "react-native-elements";
+import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function homePage() {
-    const [VakantieData, setVakantieData] = useState([]);
-    const [Loaded, SetLoaded] = useState(false);
+    const [HolidayData, setHolidayData] = useState([]);
+    const [Loaded, SetAvailable] = useState(false);
     const [SchoolYear, SetSchoolYear] = useState("2021-2022");
     const [Region, setRegion] = useState();
+    const [refreshing, setRefreshing] = useState(false);
   
-    function getVakantieData() {
+    function getHolidayData() {
       axios
         .get(
-          "https://opendata.rijksoverheid.nl/v1/sources/rijksoverheid/infotypes/schoolholidays/schoolyear/2021-2022?output=json"
+          "https://opendata.rijksoverheid.nl/v1/sources/rijksoverheid/infotypes/schoolholidays/schoolyear/" +
+            SchoolYear +
+            "?output=json"
         )
         .then((res) => {
           const data = res.data.content[0];
-          setVakantieData(data);
-          SetLoaded(true);
+          setHolidayData(data);
+          SetAvailable(true);
         });
     }
+    const onRefresh = React.useCallback(() => {
+      setRefreshing(true);
+      getRegion()
+      getHolidayData()
+      setRefreshing(false);
+    }, []);
 
     const getRegion = async () => {
       try {
@@ -29,24 +39,41 @@ export default function homePage() {
         console.log(e);
       }
       setRegion(region);
-      console.log(region);
     };
   
     useEffect(() => {
-      getVakantieData();
+      getHolidayData();
       getRegion();
-    }, []);
+    }, [SchoolYear]);
   
     return (
-      <ScrollView>
+      <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
+      >
         <Header
             centerComponent={{text: 'Homepage', style: {color: 'darkblue', fontWeight: 'bold', fontSize: 30}}}
             containerStyle={{
                 backgroundColor: 'orange',
             }}
         />
+        <Picker
+        style={{ backgroundColor: "orange", color: "darkblue" }}
+        selectedValue={SchoolYear}
+        onValueChange={(itemValue, itemIndex) => SetSchoolYear(itemValue)}
+      >
+        <Picker.Item label="2021-2022" value="2021-2022" />
+        <Picker.Item label="2022-2023" value="2022-2023" />
+        <Picker.Item label="2023-2024" value="2023-2024" />
+        <Picker.Item label="2024-2025" value="2024-2025" />
+        <Picker.Item label="2025-2026" value="2025-2026" />
+      </Picker>
         {Loaded ? (
-          VakantieData.vacations.map((d, i) => (
+          HolidayData.vacations.map((d, i) => (
             <ListItem key={i}>
               <ListItem.Content style={styles.centerText}>
                 <ListItem.Title style={styles.bigBlue}>{d.type}</ListItem.Title>
@@ -63,7 +90,7 @@ export default function homePage() {
         ) : (
           <Text>Data is not available.</Text>
         )}
-        <Text>Test</Text>
+        <Text style={{ backgroundColor: "darkblue", color: "white" }}>{[Region]}</Text>
       </ScrollView>
     );
 }

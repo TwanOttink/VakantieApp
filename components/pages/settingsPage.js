@@ -22,7 +22,7 @@ export default function settingsPage() {
       console.log(e);
     }
     setRegion(region);
-    return region;
+    // return region;
   };
   getRegion();
   return (
@@ -40,6 +40,7 @@ export default function settingsPage() {
           borderColor: "black",
           borderRadius: 4,
           width: 150,
+          justifyContent: "center"
         }}
       >
         <Picker

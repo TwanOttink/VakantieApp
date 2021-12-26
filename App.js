@@ -1,10 +1,8 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { Header } from "react-native-elements";
 import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -30,8 +28,8 @@ const init = async () => {
 
 const setRegion = async () => {
   let { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== "granted") {
-    console.log("permission not granted");
+  if (status !== "je hebt toegang") {
+    console.log("Je hebt geen toegang");
   }
 
   const userLocation = await Location.getCurrentPositionAsync();
@@ -54,6 +52,7 @@ const setRegion = async () => {
 };
 
 export default function App() {
+  init();
   return (
     <NavigationContainer>
       <Tab.Navigator

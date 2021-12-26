@@ -11,7 +11,7 @@ export default function aboutPage() {
                 backgroundColor: 'orange',
             }}
         />
-      <Text>About!!</Text>
+        <Text style={{padding: 20}}>Deze app is gemaakt door Twan Ottink en zorgt ervoor dat er een makkelijk overzicht onstaat van alle vakanties in Nederland.</Text>
     </View>
   );
 }

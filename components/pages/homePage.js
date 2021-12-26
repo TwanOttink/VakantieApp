@@ -2,11 +2,13 @@ import React, {useState, useEffect} from "react";
 import { Text, ScrollView, StyleSheet } from "react-native";
 import { ListItem, Header } from "react-native-elements";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function homePage() {
     const [VakantieData, setVakantieData] = useState([]);
     const [Loaded, SetLoaded] = useState(false);
     const [SchoolYear, SetSchoolYear] = useState("2021-2022");
+    const [Region, setRegion] = useState();
   
     function getVakantieData() {
       axios
@@ -19,15 +21,25 @@ export default function homePage() {
           SetLoaded(true);
         });
     }
+
+    const getRegion = async () => {
+      try {
+        region = await AsyncStorage.getItem("Region");
+      } catch (e) {
+        console.log(e);
+      }
+      setRegion(region);
+      console.log(region);
+    };
   
     useEffect(() => {
       getVakantieData();
+      getRegion();
     }, []);
   
     return (
       <ScrollView>
         <Header
-        leftComponent={{text: 'N'}}
             centerComponent={{text: 'Homepage', style: {color: 'darkblue', fontWeight: 'bold', fontSize: 30}}}
             containerStyle={{
                 backgroundColor: 'orange',
@@ -51,6 +63,7 @@ export default function homePage() {
         ) : (
           <Text>Data is not available.</Text>
         )}
+        <Text>Test</Text>
       </ScrollView>
     );
 }

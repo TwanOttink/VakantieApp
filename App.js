@@ -4,6 +4,9 @@ import { StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import { Header } from "react-native-elements";
+import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import homePage from './components/pages/homePage';
 import countdownPage from './components/pages/countdownPage';
@@ -11,6 +14,44 @@ import settingsPage from './components/pages/settingsPage';
 import aboutPage from './components/pages/aboutPage';
 
 const Tab = createMaterialBottomTabNavigator();
+
+const init = async () => {
+  // const value = await AsyncStorage.removeItem("Region");
+  try {
+    const value = await AsyncStorage.getItem("Region");
+    if (value !== null) {
+    } else {
+      setRegion();
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const setRegion = async () => {
+  let { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== "granted") {
+    console.log("permission not granted");
+  }
+
+  const userLocation = await Location.getCurrentPositionAsync();
+  console.log(userLocation);
+  let region = "";
+  if (userLocation.coords.latitude >= 53) {
+    region = "noord";
+  }
+  if (userLocation.coords.latitude < 53) {
+    region = "midden";
+  }
+  if (userLocation.coords.latitude <= 52) {
+    region = "zuid";
+  }
+  try {
+    await AsyncStorage.setItem("Region", region);
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 export default function App() {
   return (
